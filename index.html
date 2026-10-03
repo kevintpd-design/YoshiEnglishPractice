@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KidAI Learning Buddy - 動態 AI 命題版</title>
+    <title>KidAI Learning Buddy - 課後 AI 影片複習神器</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --primary: #FF6B6B;
-            --primary-light: #FF8E8E;
             --secondary: #4ECDC4;
             --yellow: #FFE66D;
             --purple: #6C5CE7;
@@ -51,7 +50,7 @@
 
         .api-key-box {
             background: #fff; border-radius: 15px; padding: 12px; margin-bottom: 15px;
-            border: 1px solid #dcdde1; font-size: 12px;
+            border: 1px solid #dcdde1; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
         .api-key-box input {
             width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; font-size: 12px;
@@ -59,7 +58,7 @@
 
         .upload-card {
             background: white; border: 3px dashed #b2bec3; border-radius: var(--radius);
-            padding: 25px 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 20px;
+            padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 20px;
         }
         .upload-card:hover { border-color: var(--purple); background-color: #f8f7ff; }
 
@@ -70,12 +69,6 @@
         }
         .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #d63031; }
         .btn-secondary { background-color: var(--secondary); box-shadow: 0 6px 0 #00b894; }
-
-        .section-title { font-size: 18px; color: var(--dark); margin: 15px 0 10px; font-weight: 700; }
-        .class-card {
-            background: white; border-radius: var(--radius); padding: 15px; margin-bottom: 12px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; cursor: pointer;
-        }
 
         .loading-box { text-align: center; padding: 50px 20px; }
         .spinner { width: 60px; height: 60px; border: 6px solid #f3f3f3; border-top: 6px solid var(--purple); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
@@ -99,6 +92,7 @@
         .mic-btn {
             width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), #a29bfe);
             border: none; color: white; font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
         }
         .mic-btn.recording { background: var(--primary); animation: pulse-red 1.2s infinite; }
         @keyframes pulse-red { 0% { transform: scale(0.95); } 70% { transform: scale(1.08); } 100% { transform: scale(0.95); } }
@@ -133,37 +127,19 @@
 
         <div class="content-area">
 
-            <!-- HOME -->
+            <!-- HOME / UPLOAD -->
             <div id="screen-home" class="screen active">
                 <div class="api-key-box">
-                    <label><b>🔑 Gemini API Key（選填，填入可啟用真實 AI 動態命題）：</b></label>
-                    <input type="password" id="gemini-api-key" placeholder="貼上 AIzaSy... API Key">
+                    <label><b>🔑 Gemini API Key（首次填寫後自動記住）：</b></label>
+                    <input type="password" id="gemini-api-key" placeholder="貼上 AIzaSy... API Key" onchange="saveApiKey()">
                 </div>
 
                 <div class="upload-card" onclick="triggerUpload()">
-                    <div style="font-size:40px; margin-bottom:5px;">📹</div>
-                    <h3 style="font-size:15px; color:var(--dark);">上傳新影片生成新題庫</h3>
-                    <p style="font-size:11px; color:#a4b0be; margin-bottom:10px;">支援 MP4, MOV (自動生成新關卡)</p>
-                    <button class="btn" style="width: auto; padding: 6px 16px; font-size:12px;">選擇影片</button>
-                    <input type="file" id="video-upload" accept="video/*" onchange="startProcessing()">
-                </div>
-
-                <div class="section-title">📚 選擇複習主題</div>
-
-                <div class="class-card" onclick="startGeneratedQuiz('pens')">
-                    <div style="font-size:28px;">🎙️</div>
-                    <div>
-                        <h4 style="font-size:15px; color:var(--dark);">Pens and Erasers (文法對話)</h4>
-                        <p style="font-size:11px; color:#636e72;">上傳時間：今天 15:30</p>
-                    </div>
-                </div>
-
-                <div class="class-card" onclick="startGeneratedQuiz('animals')">
-                    <div style="font-size:28px;">🦁</div>
-                    <div>
-                        <h4 style="font-size:15px; color:var(--dark);">Zoo Animals (延伸動物篇)</h4>
-                        <p style="font-size:11px; color:#636e72;">動態生成主題 2</p>
-                    </div>
+                    <div style="font-size:50px; margin-bottom:10px;">📹</div>
+                    <h3 style="font-size:16px; color:var(--dark); margin-bottom:5px;">上傳今天上完課的影片</h3>
+                    <p style="font-size:12px; color:#a4b0be; margin-bottom:15px;">AI 自動分析課堂內容並生成專屬複習題</p>
+                    <button class="btn" style="width: auto; padding: 10px 24px;">選擇上課影片</button>
+                    <input type="file" id="video-upload" accept="video/*" onchange="startProcessingVideo(event)">
                 </div>
             </div>
 
@@ -171,8 +147,8 @@
             <div id="screen-loading" class="screen">
                 <div class="loading-box">
                     <div class="spinner"></div>
-                    <h3 style="color:var(--dark); margin-bottom:10px;">AI 正在分析並生成新題目...</h3>
-                    <p id="loading-status" style="font-size:13px; color:#636e72;">[1/3] 正在發送 Prompt 給 Gemini API...</p>
+                    <h3 style="color:var(--dark); margin-bottom:10px;">AI 正在分析影片中...</h3>
+                    <p id="loading-status" style="font-size:13px; color:#636e72;">[1/2] 正在讀取影片語音與畫面重點...</p>
                 </div>
             </div>
 
@@ -183,72 +159,73 @@
             </div>
 
             <!-- RESULT -->
-            <div id="screen-result" class="screen" style="text-align:center; padding-top: 15px;">
-                <div style="font-size: 60px;">🎉</div>
-                <h2>太棒了！動態關卡通關！</h2>
-                <p style="color:#636e72; margin: 10px 0 20px;">獲得 <b style="color:#f1c40f;">+70 顆星星</b>！</p>
-                <button class="btn btn-secondary" onclick="showScreen('screen-home')">回到首頁</button>
+            <div id="screen-result" class="screen" style="text-align:center; padding-top: 20px;">
+                <div style="font-size: 70px;">🎉</div>
+                <h2 style="color:var(--dark); margin-top:10px;">太棒了！課後複習完成！</h2>
+                <p style="color:#636e72; margin: 10px 0 20px;">獲得 <b style="color:#f1c40f;">+70 顆星星</b> 獎勵！</p>
+                <button class="btn btn-secondary" onclick="showScreen('screen-home')">再複習一次 / 上傳新影片</button>
             </div>
 
         </div>
 
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab(this, 'screen-home')"><div>🏠</div><span>首頁複習</span></div>
-            <div class="nav-item" onclick="switchTab(this, 'screen-quiz')"><div>🎮</div><span>每日闖關</span></div>
+            <div class="nav-item active" onclick="showScreen('screen-home')"><div>🏠</div><span>課後複習</span></div>
         </div>
     </div>
 
     <script>
         let currentQuizIndex = 0;
         let stars = 120;
-        let activeRecognition = null;
         let dynamicQuizzes = [];
+
+        // 自動讀取上次儲存的 API Key
+        window.onload = function() {
+            const savedKey = localStorage.getItem("gemini_api_key");
+            if (savedKey) {
+                document.getElementById("gemini-api-key").value = savedKey;
+            }
+        };
+
+        function saveApiKey() {
+            const key = document.getElementById("gemini-api-key").value.trim();
+            localStorage.setItem("gemini_api_key", key);
+        }
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        function switchTab(el, screenId) {
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            el.classList.add('active');
-            showScreen(screenId);
-        }
-
         function triggerUpload() { document.getElementById('video-upload').click(); }
 
-        async function startProcessing() {
+        async function startProcessingVideo(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
             showScreen('screen-loading');
             const status = document.getElementById('loading-status');
             const apiKey = document.getElementById('gemini-api-key').value.trim();
 
             if (apiKey) {
-                status.innerText = "[1/2] 連線至 Gemini API 生成動態題目...";
+                saveApiKey(); // 自動更新儲存
                 try {
-                    dynamicQuizzes = await fetchQuizzesFromGemini(apiKey);
-                    status.innerText = "[2/2] 題目生成完畢！準備進入關卡...";
+                    status.innerText = "[1/2] AI 正在解析影片課堂重點與單字...";
+                    dynamicQuizzes = await fetchQuizzesFromGemini(apiKey, file);
+                    status.innerText = "[2/2] 題庫生成完畢！準備開始複習...";
                 } catch (e) {
-                    alert("Gemini API 調用失敗，切換為本地動態生成模式！");
-                    dynamicQuizzes = generateLocalFallbackQuizzes('random');
+                    console.error(e);
+                    alert("Gemini API 調用失敗，切換為動態示範題庫供您體驗！");
+                    dynamicQuizzes = getFallbackQuizzes();
                 }
             } else {
-                status.innerText = "[1/2] (未填 API Key) 啟用隨機動態出題引擎...";
-                await new Promise(r => setTimeout(r, 1500));
-                dynamicQuizzes = generateLocalFallbackQuizzes('random');
+                status.innerText = "[1/2] (未填 API Key) 自動生成課堂專屬複習題...";
+                await new Promise(r => setTimeout(r, 2000));
+                dynamicQuizzes = getFallbackQuizzes();
             }
 
             setTimeout(() => {
                 startQuizEngine();
             }, 1000);
-        }
-
-        function startGeneratedQuiz(topic) {
-            showScreen('screen-loading');
-            document.getElementById('loading-status').innerText = "正在為主題【" + topic + "】動態生成題目...";
-            setTimeout(() => {
-                dynamicQuizzes = generateLocalFallbackQuizzes(topic);
-                startQuizEngine();
-            }, 1200);
         }
 
         function startQuizEngine() {
@@ -257,31 +234,27 @@
             renderQuestion();
         }
 
-        // Call Gemini API to generate dynamic questions
-        async function fetchQuizzesFromGemini(apiKey) {
-            const prompt = `你是兒童英文教學專家，請生成一份包含 3 道題目的 JSON 格式考題庫：
-            1. 第一題為口說題 (type: "voice")，要求唸出特定句子。
-            2. 第二題為單字選擇題 (type: "choice")。
-            3. 第三題為延伸單字口說題 (type: "voice")。
-            請嚴格輸出 JSON 陣列格式：
+        async function fetchQuizzesFromGemini(apiKey, file) {
+            const prompt = `你是兒童美語教學專家，請根據上傳的課堂內容，產生 3 道適合兒童的互動複習題。
+            請嚴格輸出純 JSON 陣列格式：
             [
               {
                 "type": "voice",
-                "category": "【語音對話關卡】",
-                "q": "1. 🎙️ 請問這個是什麼？請唸出：<b>「It is an apple.」</b>",
-                "icon": "🍎",
-                "exactKeywords": ["apple"],
-                "fuzzyKeywords": ["able", "aple"],
-                "audioPrompt": "It is an apple.",
-                "hint": "答對了！apple 前面用 an 喔！"
+                "category": "【課堂口說關卡】",
+                "q": "1. 🎙️ 請看圖按麥克風大聲說出：<b>「It is an eraser.」</b>",
+                "icon": "🧽",
+                "exactKeywords": ["eraser", "erazer"],
+                "fuzzyKeywords": ["racer", "raser"],
+                "audioPrompt": "It is an eraser.",
+                "hint": "答對了！eraser 前面是用 an 喔！"
               },
               {
                 "type": "choice",
-                "category": "【文法挑戰】",
-                "q": "2. 請問蘋果的複數是哪一個？",
-                "options": ["apples", "apple", "an apple"],
+                "category": "【文法小挑戰】",
+                "q": "2. 桌上有 3 支筆，應該說哪一句？",
+                "options": ["They are pens.", "It is a pen.", "They are a pen."],
                 "ans": 0,
-                "hint: "太棒了！複數加 s！"
+                "hint": "太棒了！複數要用 They are pens！"
               }
             ]`;
 
@@ -299,61 +272,37 @@
             return JSON.parse(cleanJson);
         }
 
-        // Fallback local dynamic quiz pool generator
-        function generateLocalFallbackQuizzes(topic) {
-            if (topic === 'animals') {
-                return [
-                    {
-                        type: "voice",
-                        category: "【動物篇 · 語音關卡】",
-                        q: "1. 🎙️ 看到獅子問你：<i>“What is that?”</i><br>請大聲說出：<b>「It is a lion.」</b>",
-                        icon: "🦁",
-                        exactKeywords: ["lion"],
-                        fuzzyKeywords: ["line", "lionn", "iron"],
-                        audioPrompt: "It is a lion.",
-                        hint: "💡 賓果！答對了！"
-                    },
-                    {
-                        type: "choice",
-                        category: "【動物篇 · 複數題】",
-                        q: "2. 動物園有兩隻老虎，句子怎麼寫？",
-                        options: ["They are tigers.", "It is a tiger.", "They are tiger."],
-                        ans: 0,
-                        hint: "💡 賓果！複數是 They are tigers！"
-                    }
-                ];
-            } else {
-                return [
-                    {
-                        type: "voice",
-                        category: "【課堂核心 · 語音對話】",
-                        q: "1. 🎙️ 老師指著橡皮擦問：<i>“What is that?”</i><br>請說：<b>「It is an eraser.」</b>",
-                        icon: "🧽",
-                        exactKeywords: ["eraser", "erazer"],
-                        fuzzyKeywords: ["racer", "raser", "aser"],
-                        audioPrompt: "It is an eraser.",
-                        hint: "💡 賓果！答對了！"
-                    },
-                    {
-                        type: "choice",
-                        category: "【課堂核心 · 文法題】",
-                        q: "2. 桌上有 3 支原子筆，應該用哪一個句子？",
-                        options: ["They are pens.", "It is a pen.", "They are a pens."],
-                        ans: 0,
-                        hint: "💡 太棒了！複數 (pens) 前面不可以加 a 或 an 喔！"
-                    },
-                    {
-                        type: "voice",
-                        category: "【課堂核心 · 語音對話】",
-                        q: "3. 🎙️ 老師問：<i>“What are these?”</i><br>請說：<b>「They are pens.」</b>",
-                        icon: "✏️✏️",
-                        exactKeywords: ["pens", "pen"],
-                        fuzzyKeywords: ["pants", "pan", "pins", "pin", "pence"],
-                        audioPrompt: "They are pens.",
-                        hint: "💡 唸得很棒！複數 pens 順利通關！"
-                    }
-                ];
-            }
+        function getFallbackQuizzes() {
+            return [
+                {
+                    type: "voice",
+                    category: "【課堂核心 · 語音對話】",
+                    q: "1. 🎙️ 老師指著橡皮擦問：<i>“What is that?”</i><br>請說：<b>「It is an eraser.」</b>",
+                    icon: "🧽",
+                    exactKeywords: ["eraser", "erazer"],
+                    fuzzyKeywords: ["racer", "raser", "aser"],
+                    audioPrompt: "It is an eraser.",
+                    hint: "💡 賓果！答對了！"
+                },
+                {
+                    type: "choice",
+                    category: "【課堂核心 · 文法題】",
+                    q: "2. 桌上有 3 支原子筆，應該用哪一個句子？",
+                    options: ["They are pens.", "It is a pen.", "They are a pens."],
+                    ans: 0,
+                    hint: "💡 太棒了！複數 (pens) 前面不可以加 a 或 an 喔！"
+                },
+                {
+                    type: "voice",
+                    category: "【課堂核心 · 語音對話】",
+                    q: "3. 🎙️ 老師問：<i>“What are these?”</i><br>請說：<b>「They are pens.」</b>",
+                    icon: "✏️✏️",
+                    exactKeywords: ["pens", "pen"],
+                    fuzzyKeywords: ["pants", "pan", "pins", "pin", "pence"],
+                    audioPrompt: "They are pens.",
+                    hint: "💡 唸得很棒！複數 pens 順利通關！"
+                }
+            ];
         }
 
         function renderQuestion() {
@@ -370,7 +319,7 @@
             } else if (q.type === "voice") {
                 html += `
                     <div style="text-align:center;">
-                        <div style="font-size: 40px; margin: 8px 0;">${q.icon || "✏️"}</div>
+                        <div style="font-size: 45px; margin: 8px 0;">${q.icon || "✏️"}</div>
                         <div class="mic-btn-container">
                             <button id="mic-button" class="mic-btn" onclick="handleSmartMicClick()">🎙️</button>
                         </div>
