@@ -190,52 +190,65 @@
                 feedback.style.display = "block";
             }
         }
+function handleSmartMicClick() {
+    const micBtn = document.getElementById('mic-button');
+    const textResult = document.getElementById('speech-result');
+    const feedback = document.getElementById('quiz-feedback');
 
-        function handleSmartMicClick() {
-            const micBtn = document.getElementById('mic-button');
-            const textResult = document.getElementById('speech-result');
-            const feedback = document.getElementById('quiz-feedback');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        textResult.innerText = "⚠️ 您的瀏覽器不支援 Web Speech API，請使用 Chrome 開啟。";
+        return;
+    }
 
-            if (!SpeechRecognition) {
-                textResult.innerText = "⚠️ 您的瀏覽器不支援 Web Speech API，請使用 Chrome 開啟。";
-                return;
-            }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US'; // 設定為美式英文辨識
+    micBtn.classList.add('recording');
+    textResult.innerText = "🎧 正在聆聽中...";
 
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            micBtn.classList.add('recording');
-            textResult.innerText = "🎧 正在聆聽中...";
+    recognition.start();
 
-            recognition.start();
+    recognition.onresult = function(e) {
+        micBtn.classList.remove('recording');
+        const spokenText = e.results[0][0].transcript.toLowerCase().trim();
+        const q = dynamicQuizzes[currentQuizIndex];
 
-            recognition.onresult = function(e) {
-                micBtn.classList.remove('recording');
-                const spokenText = e.results[0][0].transcript.toLowerCase().trim();
-                const q = dynamicQuizzes[currentQuizIndex];
+        // 檢查講出的內容是否包含正確關鍵字
+        const isExact = q.exactKeywords && q.exactKeywords.length > 0
+            ? q.exactKeywords.some(kw => spokenText.includes(kw.toLowerCase().trim()))
+            : false;
 
-                const isExact = q.exactKeywords ? q.exactKeywords.some(kw => spokenText.includes(kw)) : false;
+        const isFuzzy = q.fuzzyKeywords && q.fuzzyKeywords.length > 0
+            ? q.fuzzyKeywords.some(kw => spokenText.includes(kw.toLowerCase().trim()))
+            : false;
 
-                if (isExact || spokenText.length > 0) {
-                    textResult.innerHTML = `辨識結果：<b>"${spokenText}"</b>`;
-                    feedback.style.color = "#00b894";
-                    feedback.innerHTML = "🎉 通關！" + q.hint;
-                    feedback.style.display = "block";
+        // 🎯 只有真的講對關鍵字才給過！
+        if (isExact || isFuzzy) {
+            textResult.innerHTML = `辨識結果：<b>"${spokenText}"</b>`;
+            feedback.style.color = "#00b894";
+            feedback.innerHTML = "🎉 通關！" + (q.hint || "唸得非常標準！");
+            feedback.style.display = "block";
 
-                    setTimeout(() => {
-                        currentQuizIndex++;
-                        if (currentQuizIndex < dynamicQuizzes.length) renderQuestion();
-                        else finishQuiz();
-                    }, 1800);
-                }
-            };
-
-            recognition.onerror = function() {
-                micBtn.classList.remove('recording');
-                textResult.innerText = "⚠️ 沒聽清楚，請再試一次！";
-            };
+            setTimeout(() => {
+                currentQuizIndex++;
+                if (currentQuizIndex < dynamicQuizzes.length) renderQuestion();
+                else finishQuiz();
+            }, 1800);
+        } else {
+            // ❌ 講錯或唸不標準時的處理
+            textResult.innerHTML = `聽到的內容：<b>"${spokenText}"</b>`;
+            feedback.style.color = "#d63031";
+            feedback.innerHTML = `💪 好像不太對喔，請再試一次！<br>提示請唸：<b>${q.audioPrompt || "指定的句子"}</b>`;
+            feedback.style.display = "block";
         }
+    };
+
+    recognition.onerror = function() {
+        micBtn.classList.remove('recording');
+        textResult.innerText = "⚠️ 沒聽清楚，請再大聲試一次！";
+    };
+}
 
         function finishQuiz() {
             stars += 70;
