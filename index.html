@@ -91,7 +91,7 @@
         const GAS_API_URL = "https://script.google.com/macros/s/AKfycbycctRbMI_gafsxA6MSGvnRqFdZo8_aSdZBSoyqZV1qgGNGAxMhqwr-WTxKHm2oWIhr/exec?action=read";
 
         let currentQuizIndex = 0;
-        let stars = 120;
+        let stars = 0;
         let dynamicQuizzes = [];
 
         function showScreen(screenId) {
@@ -250,7 +250,7 @@ function handleSmartMicClick() {
 }
 
         function finishQuiz() {
-            stars += 70;
+            stars += 100;
             document.getElementById('star-count').innerText = stars;
             confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
             showScreen('screen-result');
