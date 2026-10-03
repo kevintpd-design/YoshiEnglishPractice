@@ -235,41 +235,81 @@
         }
 
         async function fetchQuizzesFromGemini(apiKey, file) {
-            const prompt = `你是兒童美語教學專家，請根據上傳的課堂內容，產生 3 道適合兒童的互動複習題。
-            請嚴格輸出純 JSON 陣列格式：
-            [
-              {
-                "type": "voice",
-                "category": "【課堂口說關卡】",
-                "q": "1. 🎙️ 請看圖按麥克風大聲說出：<b>「It is an eraser.」</b>",
-                "icon": "🧽",
-                "exactKeywords": ["eraser", "erazer"],
-                "fuzzyKeywords": ["racer", "raser"],
-                "audioPrompt": "It is an eraser.",
-                "hint": "答對了！eraser 前面是用 an 喔！"
-              },
-              {
-                "type": "choice",
-                "category": "【文法小挑戰】",
-                "q": "2. 桌上有 3 支筆，應該說哪一句？",
-                "options": ["They are pens.", "It is a pen.", "They are a pen."],
-                "ans": 0,
-                "hint": "太棒了！複數要用 They are pens！"
-              }
-            ]`;
+// 輔助函式：將影片檔案轉成純 Base64 字串
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            // 去掉 data:video/mp4;base64, 前綴
+            const base64String = reader.result.split(',')[1];
+            resolve(base64String);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
 
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
-            });
+async function fetchQuizzesFromGemini(apiKey, file) {
+    const prompt = `你是兒童美語教學專家，請根據上傳的課堂內容，產生 3 道適合兒童的互動複習題。
+請嚴格輸出純 JSON 陣列格式：
+[
+  {
+    "type": "voice",
+    "category": "【課堂口說關卡】",
+    "q": "1. 🎙️ 請看圖按麥克風大聲說出：<b>「It is an eraser.」</b>",
+    "icon": "🧽",
+    "exactKeywords": ["eraser", "erazer"],
+    "fuzzyKeywords": ["racer", "raser"],
+    "audioPrompt": "It is an eraser.",
+    "hint": "答對了！eraser 前面是用 an 喔！"
+  },
+  {
+    "type": "choice",
+    "category": "【文法小挑戰】",
+    "q": "2. 桌上有 3 支筆，應該說哪一句？",
+    "options": ["They are pens.", "It is a pen.", "They are a pen."],
+    "ans": 0,
+    "hint": "太棒了！複數要用 They are pens！"
+  }
+]`;
 
-            const data = await res.json();
-            const textResponse = data.candidates[0].content.parts[0].text;
-            const cleanJson = textResponse.replace(/```json|```/g, "").trim();
-            return JSON.parse(cleanJson);
+    // 1. 讀取影片 Base64
+    const base64Video = await fileToBase64(file);
+
+    // 2. 發送請求給 Gemini (附帶影片與強制 JSON 輸出)
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [
+                {
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                mimeType: file.type || "video/mp4",
+                                data: base64Video
+                            }
+                        }
+                    ]
+                }
+            ],
+            generationConfig: {
+                responseMimeType: "application/json" // ⭐️ 強制回傳乾淨的 JSON，不會有 markdown 符號
+            }
+        })
+    });
+
+    const data = await res.json();
+
+    // 3. 如果 API 回報錯誤，跳出具體訊息
+    if (!res.ok) {
+        throw new Error(data.error?.message || `API 請求失敗: HTTP ${res.status}`);
+    }
+
+    const textResponse = data.candidates[0].content.parts[0].text;
+    return JSON.parse(textResponse);
+}
         }
 
         function getFallbackQuizzes() {
