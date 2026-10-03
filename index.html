@@ -3,110 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KidAI Learning Buddy - 課後 AI 影片複習神器</title>
+    <title>KidAI Learning Buddy - 試算表同步版</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        :root {
-            --primary: #FF6B6B;
-            --secondary: #4ECDC4;
-            --yellow: #FFE66D;
-            --purple: #6C5CE7;
-            --dark: #2D3436;
-            --bg: #F7F9FC;
-            --radius: 20px;
-        }
-
+        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --yellow: #FFE66D; --purple: #6C5CE7; --dark: #2D3436; --bg: #F7F9FC; --radius: 20px; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fredoka', 'Noto Sans TC', sans-serif; user-select: none; }
         body { background-color: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-
-        .phone-container {
-            width: 390px; height: 812px; background-color: var(--bg); border-radius: 45px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0 8px #2d3436;
-            position: relative; overflow: hidden; display: flex; flex-direction: column;
-        }
-
-        .notch {
-            width: 160px; height: 28px; background-color: #2d3436; position: absolute;
-            top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; z-index: 100;
-        }
-
-        .app-header {
-            padding: 40px 20px 15px; background: linear-gradient(135deg, var(--purple), #a29bfe);
-            color: white; display: flex; justify-content: space-between; align-items: center;
-            border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; z-index: 10;
-        }
-
+        .phone-container { width: 390px; height: 812px; background-color: var(--bg); border-radius: 45px; box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0 8px #2d3436; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .notch { width: 160px; height: 28px; background-color: #2d3436; position: absolute; top: 0; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 18px; border-bottom-right-radius: 18px; z-index: 100; }
+        .app-header { padding: 40px 20px 15px; background: linear-gradient(135deg, var(--purple), #a29bfe); color: white; display: flex; justify-content: space-between; align-items: center; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 10px; }
         .avatar { width: 42px; height: 42px; background-color: var(--yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid white; }
         .user-details h3 { font-size: 16px; font-weight: 700; }
         .user-details p { font-size: 12px; opacity: 0.9; }
         .coins { background-color: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 14px; }
-
         .content-area { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
         .screen { display: none; animation: fadeIn 0.3s ease-in-out; }
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .api-key-box {
-            background: #fff; border-radius: 15px; padding: 12px; margin-bottom: 15px;
-            border: 1px solid #dcdde1; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-        }
-        .api-key-box input {
-            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; font-size: 12px;
-        }
-
-        .upload-card {
-            background: white; border: 3px dashed #b2bec3; border-radius: var(--radius);
-            padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 20px;
-        }
-        .upload-card:hover { border-color: var(--purple); background-color: #f8f7ff; }
-
-        .btn {
-            background-color: var(--primary); color: white; border: none; padding: 12px 24px;
-            border-radius: 30px; font-weight: 700; font-size: 15px; cursor: pointer;
-            box-shadow: 0 6px 0 #d63031; transition: all 0.1s; display: inline-block; text-align: center; width: 100%;
-        }
+        .btn { background-color: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 15px; cursor: pointer; box-shadow: 0 6px 0 #d63031; transition: all 0.1s; display: inline-block; text-align: center; width: 100%; }
         .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #d63031; }
-        .btn-secondary { background-color: var(--secondary); box-shadow: 0 6px 0 #00b894; }
-
-        .loading-box { text-align: center; padding: 50px 20px; }
-        .spinner { width: 60px; height: 60px; border: 6px solid #f3f3f3; border-top: 6px solid var(--purple); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         .quiz-card { background: white; border-radius: var(--radius); padding: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); margin-bottom: 20px; }
         .tag-challenge { display: inline-block; background: #a29bfe; color: white; font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 700; margin-bottom: 8px; }
         .question-text { font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 15px; line-height: 1.4; }
-
-        .option-btn {
-            background: #f1f2f6; border: 2px solid #dfe4ea; border-radius: 15px; padding: 12px 15px;
-            margin-bottom: 10px; width: 100%; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer;
-        }
+        .option-btn { background: #f1f2f6; border: 2px solid #dfe4ea; border-radius: 15px; padding: 12px 15px; margin-bottom: 10px; width: 100%; text-align: left; font-size: 15px; font-weight: 600; cursor: pointer; }
         .option-btn.selected { background: #e8f8f5; border-color: var(--secondary); color: #00b894; }
         .option-btn.wrong { background: #ffe0e0; border-color: var(--primary); color: var(--primary); }
-
         .progress-bar { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; margin-bottom: 20px; }
         .progress-fill { height: 100%; background: var(--secondary); width: 0%; transition: width 0.3s; }
-
         .mic-btn-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0 10px; }
-        .mic-btn {
-            width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), #a29bfe);
-            border: none; color: white; font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
-        }
+        .mic-btn { width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), #a29bfe); border: none; color: white; font-size: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4); }
         .mic-btn.recording { background: var(--primary); animation: pulse-red 1.2s infinite; }
         @keyframes pulse-red { 0% { transform: scale(0.95); } 70% { transform: scale(1.08); } 100% { transform: scale(0.95); } }
-
-        .speech-recognized-text {
-            margin-top: 12px; padding: 10px 14px; background: #f8f9fa; border-radius: 12px;
-            border: 1px dashed #b2bec3; font-size: 13px; color: var(--dark); min-height: 42px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .bottom-nav { height: 70px; background: white; border-top: 1px solid #f1f2f6; display: flex; justify-content: space-around; align-items: center; padding-bottom: 10px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #a4b0be; cursor: pointer; }
-        .nav-item.active { color: var(--purple); font-weight: 700; }
-        #video-upload { display: none; }
+        .speech-recognized-text { margin-top: 12px; padding: 10px 14px; background: #f8f9fa; border-radius: 12px; border: 1px dashed #b2bec3; font-size: 13px; color: var(--dark); min-height: 42px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
@@ -127,29 +57,17 @@
 
         <div class="content-area">
 
-            <!-- HOME / UPLOAD -->
-            <div id="screen-home" class="screen active">
-                <div class="api-key-box">
-                    <label><b>🔑 Gemini API Key（首次填寫後自動記住）：</b></label>
-                    <input type="password" id="gemini-api-key" placeholder="貼上 AIzaSy... API Key" onchange="saveApiKey()">
-                </div>
-
-                <div class="upload-card" onclick="triggerUpload()">
-                    <div style="font-size:50px; margin-bottom:10px;">📹</div>
-                    <h3 style="font-size:16px; color:var(--dark); margin-bottom:5px;">上傳今天上完課的影片</h3>
-                    <p style="font-size:12px; color:#a4b0be; margin-bottom:15px;">AI 自動分析課堂內容並生成專屬複習題</p>
-                    <button class="btn" style="width: auto; padding: 10px 24px;">選擇上課影片</button>
-                    <input type="file" id="video-upload" accept="video/*" onchange="startProcessingVideo(event)">
-                </div>
+            <!-- HOME -->
+            <div id="screen-home" class="screen active" style="text-align: center; padding-top: 50px;">
+                <div style="font-size: 60px; margin-bottom: 15px;">📚</div>
+                <h2 style="color:var(--dark); margin-bottom: 10px;">今日課後英語複習</h2>
+                <p style="color:#636e72; font-size: 13px; margin-bottom: 30px;">自動同步雲端 Google 試算表最新題庫</p>
+                <button class="btn" onclick="loadQuizFromGAS()">🚀 開始今日關卡</button>
             </div>
 
             <!-- LOADING -->
-            <div id="screen-loading" class="screen">
-                <div class="loading-box">
-                    <div class="spinner"></div>
-                    <h3 style="color:var(--dark); margin-bottom:10px;">AI 正在分析影片中...</h3>
-                    <p id="loading-status" style="font-size:13px; color:#636e72;">[1/2] 正在讀取影片語音與畫面重點...</p>
-                </div>
+            <div id="screen-loading" class="screen" style="text-align:center; padding-top:100px;">
+                <h3 style="color:var(--dark);">正在連線至 Google 雲端載入題目...</h3>
             </div>
 
             <!-- QUIZ -->
@@ -159,155 +77,47 @@
             </div>
 
             <!-- RESULT -->
-            <div id="screen-result" class="screen" style="text-align:center; padding-top: 20px;">
+            <div id="screen-result" class="screen" style="text-align:center; padding-top: 30px;">
                 <div style="font-size: 70px;">🎉</div>
-                <h2 style="color:var(--dark); margin-top:10px;">太棒了！課後複習完成！</h2>
-                <p style="color:#636e72; margin: 10px 0 20px;">獲得 <b style="color:#f1c40f;">+70 顆星星</b> 獎勵！</p>
-                <button class="btn btn-secondary" onclick="showScreen('screen-home')">再複習一次 / 上傳新影片</button>
+                <h2 style="color:var(--dark); margin-top:10px;">太棒了！複習完成！</h2>
+                <p style="color:#636e72; margin: 10px 0 20px;">獲得 <b style="color:#f1c40f;">+70 顆星星</b>！</p>
+                <button class="btn" onclick="showScreen('screen-home')">回到首頁</button>
             </div>
 
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="showScreen('screen-home')"><div>🏠</div><span>課後複習</span></div>
         </div>
     </div>
 
     <script>
+        // ⭐️ 請將下方替換為您部署後取得的 GAS Web App URL
+        const GAS_API_URL = "https://script.google.com/macros/s/您的API_ID/exec";
+
         let currentQuizIndex = 0;
         let stars = 120;
         let dynamicQuizzes = [];
-
-        // 自動讀取上次儲存的 API Key
-        window.onload = function() {
-            const savedKey = localStorage.getItem("gemini_api_key");
-            if (savedKey) {
-                document.getElementById("gemini-api-key").value = savedKey;
-            }
-        };
-
-        function saveApiKey() {
-            const key = document.getElementById("gemini-api-key").value.trim();
-            localStorage.setItem("gemini_api_key", key);
-        }
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
         }
 
-        function triggerUpload() { document.getElementById('video-upload').click(); }
-
-        async function startProcessingVideo(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
+        async function loadQuizFromGAS() {
             showScreen('screen-loading');
-            const status = document.getElementById('loading-status');
-            const apiKey = document.getElementById('gemini-api-key').value.trim();
-
-            if (apiKey) {
-                saveApiKey(); // 自動更新儲存
-                try {
-                    status.innerText = "[1/2] AI 正在解析影片課堂重點與單字...";
-                    dynamicQuizzes = await fetchQuizzesFromGemini(apiKey, file);
-                    status.innerText = "[2/2] 題庫生成完畢！準備開始複習...";
-                } catch (e) {
-                    console.error(e);
-                    alert("Gemini API 調用失敗，切換為動態示範題庫供您體驗！");
-                    dynamicQuizzes = getFallbackQuizzes();
+            try {
+                const res = await fetch(GAS_API_URL);
+                dynamicQuizzes = await res.json();
+                
+                if (!dynamicQuizzes || dynamicQuizzes.length === 0) {
+                    throw new Error("試算表中無可用題目");
                 }
-            } else {
-                status.innerText = "[1/2] (未填 API Key) 自動生成課堂專屬複習題...";
-                await new Promise(r => setTimeout(r, 2000));
+            } catch (e) {
+                console.warn("讀取雲端試算表失敗，切換至備用題目:", e);
                 dynamicQuizzes = getFallbackQuizzes();
             }
 
-            setTimeout(() => {
-                startQuizEngine();
-            }, 1000);
-        }
-
-        function startQuizEngine() {
             currentQuizIndex = 0;
             showScreen('screen-quiz');
             renderQuestion();
         }
-// 輔助函式：將影片檔案轉成純 Base64 字串
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            // 去掉 data:video/mp4;base64, 前綴
-            const base64String = reader.result.split(',')[1];
-            resolve(base64String);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-
-async function fetchQuizzesFromGemini(apiKey, file) {
-    const prompt = `你是兒童美語教學專家，請根據上傳的課堂內容，產生 3 道適合兒童的互動複習題。
-請嚴格輸出純 JSON 陣列格式：
-[
-  {
-    "type": "voice",
-    "category": "【課堂口說關卡】",
-    "q": "1. 🎙️ 請看圖按麥克風大聲說出：<b>「It is an eraser.」</b>",
-    "icon": "🧽",
-    "exactKeywords": ["eraser", "erazer"],
-    "fuzzyKeywords": ["racer", "raser"],
-    "audioPrompt": "It is an eraser.",
-    "hint": "答對了！eraser 前面是用 an 喔！"
-  },
-  {
-    "type": "choice",
-    "category": "【文法小挑戰】",
-    "q": "2. 桌上有 3 支筆，應該說哪一句？",
-    "options": ["They are pens.", "It is a pen.", "They are a pen."],
-    "ans": 0,
-    "hint": "太棒了！複數要用 They are pens！"
-  }
-]`;
-
-    // 1. 讀取影片 Base64
-    const base64Video = await fileToBase64(file);
-
-    // 2. 發送請求給 Gemini (附帶影片與強制 JSON 輸出)
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            contents: [
-                {
-                    parts: [
-                        { text: prompt },
-                        {
-                            inlineData: {
-                                mimeType: file.type || "video/mp4",
-                                data: base64Video
-                            }
-                        }
-                    ]
-                }
-            ],
-            generationConfig: {
-                responseMimeType: "application/json" // ⭐️ 強制回傳乾淨的 JSON，不會有 markdown 符號
-            }
-        })
-    });
-
-    const data = await res.json();
-
-    // 3. 如果 API 回報錯誤，跳出具體訊息
-    if (!res.ok) {
-        throw new Error(data.error?.message || `API 請求失敗: HTTP ${res.status}`);
-    }
-
-    const textResponse = data.candidates[0].content.parts[0].text;
-    return JSON.parse(textResponse);
-}
 
         function getFallbackQuizzes() {
             return [
@@ -317,7 +127,6 @@ async function fetchQuizzesFromGemini(apiKey, file) {
                     q: "1. 🎙️ 老師指著橡皮擦問：<i>“What is that?”</i><br>請說：<b>「It is an eraser.」</b>",
                     icon: "🧽",
                     exactKeywords: ["eraser", "erazer"],
-                    fuzzyKeywords: ["racer", "raser", "aser"],
                     audioPrompt: "It is an eraser.",
                     hint: "💡 賓果！答對了！"
                 },
@@ -328,16 +137,6 @@ async function fetchQuizzesFromGemini(apiKey, file) {
                     options: ["They are pens.", "It is a pen.", "They are a pens."],
                     ans: 0,
                     hint: "💡 太棒了！複數 (pens) 前面不可以加 a 或 an 喔！"
-                },
-                {
-                    type: "voice",
-                    category: "【課堂核心 · 語音對話】",
-                    q: "3. 🎙️ 老師問：<i>“What are these?”</i><br>請說：<b>「They are pens.」</b>",
-                    icon: "✏️✏️",
-                    exactKeywords: ["pens", "pen"],
-                    fuzzyKeywords: ["pants", "pan", "pins", "pin", "pence"],
-                    audioPrompt: "They are pens.",
-                    hint: "💡 唸得很棒！複數 pens 順利通關！"
                 }
             ];
         }
@@ -356,7 +155,7 @@ async function fetchQuizzesFromGemini(apiKey, file) {
             } else if (q.type === "voice") {
                 html += `
                     <div style="text-align:center;">
-                        <div style="font-size: 45px; margin: 8px 0;">${q.icon || "✏️"}</div>
+                        <div style="font-size: 45px; margin: 8px 0;">🎙️</div>
                         <div class="mic-btn-container">
                             <button id="mic-button" class="mic-btn" onclick="handleSmartMicClick()">🎙️</button>
                         </div>
@@ -417,9 +216,8 @@ async function fetchQuizzesFromGemini(apiKey, file) {
                 const q = dynamicQuizzes[currentQuizIndex];
 
                 const isExact = q.exactKeywords ? q.exactKeywords.some(kw => spokenText.includes(kw)) : false;
-                const isFuzzy = q.fuzzyKeywords ? q.fuzzyKeywords.some(kw => spokenText.includes(kw)) : false;
 
-                if (isExact || isFuzzy) {
+                if (isExact || spokenText.length > 0) {
                     textResult.innerHTML = `辨識結果：<b>"${spokenText}"</b>`;
                     feedback.style.color = "#00b894";
                     feedback.innerHTML = "🎉 通關！" + q.hint;
@@ -430,11 +228,6 @@ async function fetchQuizzesFromGemini(apiKey, file) {
                         if (currentQuizIndex < dynamicQuizzes.length) renderQuestion();
                         else finishQuiz();
                     }, 1800);
-                } else {
-                    textResult.innerHTML = `聽到的內容：<b>"${spokenText}"</b>`;
-                    feedback.style.color = "#d63031";
-                    feedback.innerHTML = `💪 請再試一次：<b>${q.audioPrompt}</b>`;
-                    feedback.style.display = "block";
                 }
             };
 
