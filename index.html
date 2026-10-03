@@ -233,8 +233,6 @@
             showScreen('screen-quiz');
             renderQuestion();
         }
-
-        async function fetchQuizzesFromGemini(apiKey, file) {
 // 輔助函式：將影片檔案轉成純 Base64 字串
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -310,7 +308,6 @@ async function fetchQuizzesFromGemini(apiKey, file) {
     const textResponse = data.candidates[0].content.parts[0].text;
     return JSON.parse(textResponse);
 }
-        }
 
         function getFallbackQuizzes() {
             return [
