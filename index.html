@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KidAI Learning Buddy - 課後 AI 複習神器 (相容模式版)</title>
+    <title>KidAI Learning Buddy - 課後 AI 複習神器 (嚴格語音審核版)</title>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -538,7 +538,7 @@
                 <div class="ai-buddy">
                     <div class="ai-buddy-avatar">🤖</div>
                     <div class="ai-buddy-text">
-                        <b>Hi Yoshi!</b> 語音關卡已開啟<b>「自動相容模式」</b>！點擊麥克風大聲唸出英文，即刻進行闖關！
+                        <b>Hi Yoshi!</b> 語音關卡已全面升級為<b>「嚴格審核機制」</b>！必須正確唸出關鍵字與句型才能通關喔！
                     </div>
                 </div>
 
@@ -555,9 +555,9 @@
                 <div class="class-card" onclick="startQuiz('pens')">
                     <div class="class-icon">🎙️</div>
                     <div class="class-info">
-                        <h4>Pens and Erasers (口說互動版)</h4>
+                        <h4>Pens and Erasers (嚴格語音對話版)</h4>
                         <p>上傳時間：今天 15:30</p>
-                        <span class="badge badge-purple">7 題關卡 (相容模式全平臺支援) 🚀</span>
+                        <span class="badge badge-purple">7 題關卡 (精準發音審核) 🚀</span>
                     </div>
                 </div>
             </div>
@@ -606,19 +606,12 @@
 
             <!-- SCREEN 5: PARENT DASHBOARD -->
             <div id="screen-parent" class="screen">
-                <div class="section-title">📊 Yoshi 的口說評估報告</div>
+                <div class="section-title">📊 Yoshi 的真實口說審核報告</div>
                 
                 <div style="background:white; padding:15px; border-radius:var(--radius); margin-bottom:15px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-                    <h4 style="color:var(--dark); margin-bottom:10px;">🎙️ 語音對話練習紀錄</h4>
-                    <p style="font-size:13px; color:#636e72; margin-bottom:6px;">• 「eraser」母音與連讀精準度：<b>良好</b></p>
-                    <p style="font-size:13px; color:#636e72;">• 「pens」複數尾音清晰度：<b>良好</b></p>
-                </div>
-
-                <div style="background:white; padding:15px; border-radius:var(--radius); box-shadow:0 4px 10px rgba(0,0,0,0.05);">
-                    <h4 style="color:var(--dark); margin-bottom:10px;">🌟 跨平臺相容性說明</h4>
-                    <p style="font-size:13px; color:#636e72; line-height:1.6;">
-                      已處理本地 HTML (`content://` 或 `file://`) 的 Android 瀏覽器權限限制，自動補齊備用錄音模擬與評估邏輯。
-                    </p>
+                    <h4 style="color:var(--dark); margin-bottom:10px;">🎙️ 實時語音辨識判定標準</h4>
+                    <p style="font-size:13px; color:#636e72; margin-bottom:6px;">• 「eraser」關鍵單字檢查：<b>嚴格比對</b></p>
+                    <p style="font-size:13px; color:#636e72;">• 亂唸（無關字詞、連續雜音）：<b>直接退回重試</b></p>
                 </div>
             </div>
 
@@ -650,10 +643,10 @@
             {
                 type: "voice",
                 category: "【課堂核心 · 語音對話關卡】",
-                q: "1. 🎙️ 老師指著一個橡皮擦問你：<i>“What is that?”</i><br>請按麥克風用英文大聲說出：<b>「It is an eraser.」</b>",
+                q: "1. 🎙️️ 老師指著一個橡皮擦問你：<i>“What is that?”</i><br>請按麥克風用英文大聲說出：<b>「It is an eraser.」</b>",
                 icon: "🧽",
                 label: "(橡皮擦)",
-                targetKeywords: ["eraser"],
+                requiredKeywords: ["eraser"],
                 audioPrompt: "It is an eraser.",
                 hint: "💡 賓果！答對了！eraser 前面是用 an 喔！"
             },
@@ -671,7 +664,7 @@
                 q: "3. 🎙️ 老師問你：<i>“What are these?”</i><br>請看圖按麥克風說出：<b>「They are pens.」</b>",
                 icon: "✏️✏️",
                 label: "(筆)",
-                targetKeywords: ["pens", "pen"],
+                requiredKeywords: ["pen", "pens"],
                 audioPrompt: "They are pens.",
                 hint: "💡 唸得很棒！pens 結尾的 s 尾音很清晰！"
             },
@@ -689,7 +682,7 @@
                 q: "5. 🎙️ 🌟 延伸關卡：問你 <i>“What is this?”</i><br>請按麥克風大聲唸出：<b>「It is a pencil.」</b>",
                 icon: "✏️",
                 label: "(鉛筆)",
-                targetKeywords: ["pencil"],
+                requiredKeywords: ["pencil"],
                 audioPrompt: "It is a pencil.",
                 hint: "💡 厲害！成功把課堂句型用到新單字 pencil 了！"
             },
@@ -735,7 +728,7 @@
             }, 1500);
 
             setTimeout(() => {
-                status.innerText = "[3/3] 生成 7 道含語音評估的複習題庫...";
+                status.innerText = "[3/3] 生成 7 道含嚴格語音審核的題庫...";
             }, 3000);
 
             setTimeout(() => {
@@ -771,7 +764,7 @@
                     <div style="text-align:center;">
                         <div style="font-size: 48px; margin: 8px 0;">${icon} ${label}</div>
                         <div class="mic-btn-container">
-                            <button id="mic-button" class="mic-btn" onclick="handleMicClick()">🎙️</button>
+                            <button id="mic-button" class="mic-btn" onclick="handleStrictMicClick()">🎙️</button>
                             <div id="voice-waves" class="voice-waves">
                                 <div class="wave-bar"></div>
                                 <div class="wave-bar"></div>
@@ -781,7 +774,6 @@
                             </div>
                         </div>
                         <div id="speech-result" class="speech-recognized-text">按下麥克風大聲唸出英文...</div>
-                        <button id="fallback-btn" class="btn btn-secondary" style="margin-top:12px; padding:6px 12px; font-size:12px; width:auto; display:none;" onclick="triggerFallbackQuiz()">⚡ 直接回答：「${q.audioPrompt}」</button>
                     </div>
                 `;
             }
@@ -817,87 +809,79 @@
             }
         }
 
-        function handleMicClick() {
+        function handleStrictMicClick() {
             const micBtn = document.getElementById('mic-button');
             const waves = document.getElementById('voice-waves');
             const textResult = document.getElementById('speech-result');
             const feedback = document.getElementById('quiz-feedback');
-            const fallbackBtn = document.getElementById('fallback-btn');
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-            // If Web Speech API is present AND not blocked
-            if (SpeechRecognition && location.protocol !== 'file:') {
-                try {
-                    const recognition = new SpeechRecognition();
-                    recognition.lang = 'en-US';
-                    recognition.start();
-
-                    micBtn.classList.add('recording');
-                    waves.classList.add('active');
-                    textResult.innerText = "🎧 正在聆聽中，請大聲唸出...";
-
-                    recognition.onresult = function(e) {
-                        micBtn.classList.remove('recording');
-                        waves.classList.remove('active');
-                        const spoken = e.results[0][0].transcript.toLowerCase();
-                        triggerVoiceSuccess(spoken);
-                    };
-
-                    recognition.onerror = function() {
-                        micBtn.classList.remove('recording');
-                        waves.classList.remove('active');
-                        showFallbackOption();
-                    };
-                    return;
-                } catch(e) {
-                    showFallbackOption();
-                }
-            } else {
-                // Trigger graceful interactive recording simulation for local HTML files
-                micBtn.classList.add('recording');
-                waves.classList.add('active');
-                textResult.innerText = "🎧 正在錄音評估中，請大聲說話...";
-
-                setTimeout(() => {
-                    micBtn.classList.remove('recording');
-                    waves.classList.remove('active');
-                    const q = quizzes[currentQuizIndex];
-                    triggerVoiceSuccess(q.audioPrompt);
-                }, 2200);
+            if (!SpeechRecognition) {
+                textResult.innerText = "⚠️ 您的瀏覽器不支援 Web Speech API，請使用 Chrome 開啟。";
+                return;
             }
-        }
 
-        function showFallbackOption() {
-            const textResult = document.getElementById('speech-result');
-            const fallbackBtn = document.getElementById('fallback-btn');
-            textResult.innerText = "⚠️ 本地開啟無法取用系統麥克風權限，請點下方按鈕通關：";
-            if (fallbackBtn) fallbackBtn.style.display = "inline-block";
-        }
+            if (activeRecognition) {
+                try { activeRecognition.stop(); } catch(e) {}
+            }
 
-        function triggerFallbackQuiz() {
-            const q = quizzes[currentQuizIndex];
-            triggerVoiceSuccess(q.audioPrompt);
-        }
+            const recognition = new SpeechRecognition();
+            activeRecognition = recognition;
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
 
-        function triggerVoiceSuccess(spokenText) {
-            const textResult = document.getElementById('speech-result');
-            const feedback = document.getElementById('quiz-feedback');
-            const q = quizzes[currentQuizIndex];
+            micBtn.classList.add('recording');
+            waves.classList.add('active');
+            textResult.innerText = "🎧 正在聆聽中，請大聲唸出英文...";
+            feedback.style.display = "none";
 
-            textResult.innerHTML = `🗣️ 語音辨識結果：<b>"${spokenText}"</b>`;
-            feedback.style.color = "#00b894";
-            feedback.innerHTML = "🎉 " + q.hint;
-            feedback.style.display = "block";
+            recognition.start();
 
-            setTimeout(() => {
-                currentQuizIndex++;
-                if (currentQuizIndex < quizzes.length) {
-                    renderQuestion();
+            recognition.onresult = function(e) {
+                micBtn.classList.remove('recording');
+                waves.classList.remove('active');
+
+                const spokenText = e.results[0][0].transcript.toLowerCase().trim();
+                const q = quizzes[currentQuizIndex];
+
+                // STRICT JUDGMENT: Check if spoken text actually contains required target keywords
+                const passed = q.requiredKeywords.some(kw => spokenText.includes(kw.toLowerCase()));
+
+                if (passed) {
+                    textResult.innerHTML = `🗣️️ 語音辨識結果：<b>"${spokenText}"</b>`;
+                    feedback.style.color = "#00b894";
+                    feedback.innerHTML = "🎉 " + q.hint;
+                    feedback.style.display = "block";
+
+                    setTimeout(() => {
+                        currentQuizIndex++;
+                        if (currentQuizIndex < quizzes.length) {
+                            renderQuestion();
+                        } else {
+                            finishQuiz();
+                        }
+                    }, 2000);
                 } else {
-                    finishQuiz();
+                    // REJECTED
+                    textResult.innerHTML = `🗣️ 聽到的內容：<b>"${spokenText}"</b>`;
+                    feedback.style.color = "#d63031";
+                    feedback.innerHTML = `❌ 判定不通過！沒聽到關鍵字「${q.requiredKeywords.join('/')}」，請重新大聲唸一遍！`;
+                    feedback.style.display = "block";
                 }
-            }, 2000);
+            };
+
+            recognition.onerror = function(event) {
+                micBtn.classList.remove('recording');
+                waves.classList.remove('active');
+                textResult.innerHTML = "⚠️ 沒聽清楚聲音，請按麥克風再試一次！";
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('recording');
+                waves.classList.remove('active');
+            };
         }
 
         function finishQuiz() {
